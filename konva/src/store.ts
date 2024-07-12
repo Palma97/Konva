@@ -27,7 +27,10 @@ export const useStore = create<StoreState>((set) => ({
   scribbles: [],
   setScribbles: (arrayScr) => set({ scribbles: arrayScr }),
   rectangles: [],
-  setRectangles: (arrayRect) => set({ rectangles: arrayRect }),
+  setRectangles: (arrayRect) => {
+    console.log(arrayRect);
+    return set({ rectangles: arrayRect });
+  },
   arrows: [],
   setArrows: (arrayArrow) => set({ arrows: arrayArrow }),
   circles: [],

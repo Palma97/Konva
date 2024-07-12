@@ -13,16 +13,17 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { DrawAction } from "./Paint.constanst";
 import { useStore } from "../store";
+import { Rectangle } from "./Paint.types";
 /* import { SketchPicker } from "react-color";
 import { Download, Upload, XLg } from "react-bootstrap-icons"; */
 
 interface PaintProps {}
 
 export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
+  const [rectangles, setRectangles] = React.useState<Rectangle[]>([]);
   /* const [color, setColor] = useState("#000");
   const [drawAction, setDrawAction] = useState<DrawAction>(DrawAction.Select);
   const [scribbles, setScribbles] = useState<Scribble[]>([]);
-  const [rectangles, setRectangles] = useState<Rectangle[]>([]);
   const [circles, setCircles] = useState<Circle[]>([]);
   const [arrows, setArrows] = useState<Arrow[]>([]);
   const [image, setImage] = useState<HTMLImageElement>(); */
@@ -48,8 +49,8 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
   /* const setDrawAction = useStore((state) => state.setDrawAction); */
   const scribbles = useStore((state) => state.scribbles);
   const setScribbles = useStore((state) => state.setScribbles);
-  const rectangles = useStore((state) => state.rectangles);
-  const setRectangles = useStore((state) => state.setRectangles);
+  const rectanglesStore = useStore((state) => state.rectangles);
+  const setRectanglesStore = useStore((state) => state.setRectangles);
   const circles = useStore((state) => state.circles);
   const setCircles = useStore((state) => state.setCircles);
   const arrows = useStore((state) => state.arrows);
@@ -70,7 +71,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
   const currentShapeRef = useRef<string>();
 
   const onStageMouseDown = useCallback(
-    (e: KonvaEventObject<MouseEvent>) => {
+    async (e: KonvaEventObject<MouseEvent>) => {
       if (drawAction === DrawAction.Select) return;
       isPaintRef.current = true;
       const stage = stageRef?.current;
@@ -108,7 +109,6 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
           break;
         }
         case DrawAction.Rectangle: {
-          //@ts-ignore
           setRectangles((prevRectangles) => [
             ...prevRectangles,
             {
@@ -120,6 +120,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               color,
             },
           ]);
+          setRectanglesStore(rectangles);
           break;
         }
         case DrawAction.Arrow: {
