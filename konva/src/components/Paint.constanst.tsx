@@ -21,9 +21,9 @@ export const PAINT_OPTIONS = [
     label: "Select Shapes",
     icon: <ArrowUpLeftSquareFill />,
   },
-  { id: DrawAction.Rectangle, label: "Draw Rectangle Shape", icon: <Square /> },
-  { id: DrawAction.Circle, label: "Draw Cirle Shape", icon: <Circle /> },
-  { id: DrawAction.Arrow, label: "Draw Arrow Shape", icon: <ArrowUpLeft /> },
+  { id: DrawAction.Rectangle, label: "Draw Rectangle", icon: <Square /> },
+  { id: DrawAction.Circle, label: "Draw Circle", icon: <Circle /> },
+  { id: DrawAction.Arrow, label: "Draw Arrow", icon: <ArrowUpLeft /> },
   { id: DrawAction.Scribble, label: "Scribble", icon: <Pencil /> },
   { id: DrawAction.Text, label: "Text", icon: <Pencil /> },
 ];

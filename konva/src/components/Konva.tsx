@@ -15,14 +15,11 @@ import { v4 as uuidv4 } from "uuid";
 import { DrawAction } from "./Paint.constanst";
 import { useStore } from "../store";
 import { Rectangle, Scribble, Circle, Arrow, Text } from "./Paint.types";
-import { CheckLg } from "react-bootstrap-icons";
-/* import { SketchPicker } from "react-color";
-import { Download, Upload, XLg } from "react-bootstrap-icons"; */
 
 interface PaintProps {}
+//@ts-ignore
 
 export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
-  //const [color, setColor] = useState("#000");
   const rectanglesStore = useStore((state) => state.rectangles);
   const [rectangles, setRectangles] = React.useState<Rectangle[]>([]);
   const [scribbles, setScribbles] = React.useState<Scribble[]>([]);
@@ -36,30 +33,8 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
     y: number;
   } | null>(null);
 
-  /* const handleTextDblClick = (e: KonvaEventObject<MouseEvent>) => {
-    const { id, text, x, y } = e.target.attrs;
-    setEditingText({ id, text, x, y });
-  };
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (editingText) {
-      const updatedTexts = texts.map((text) =>
-        text.id === editingText.id ? { ...text, text: e.target.value } : text
-      );
-      console.log("Holoooooo");
-      setTexts(updatedTexts);
-      setEditingText({ ...editingText, text: e.target.value });
-    }
-  };
-
-  const handleTextBlur = () => {
-    setEditingText(null);
-  }; */
-
   const handleTextDblClick = (e: KonvaEventObject<MouseEvent>) => {
     const textNode = e.target;
-    console.log(textNode);
-    textNode.destroy();
     const textPosition = textNode.getAbsolutePosition();
     setEditingText({
       //@ts-ignore
@@ -79,7 +54,6 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
     if (!editingText) return;
     //@ts-ignore
     const { id, text } = editingText;
-    console.log(id, text, editingText, texts);
     setTexts((prevTexts) =>
       //@ts-ignore
       prevTexts.map((t) => (t.id === id ? { ...t, text } : t))
@@ -87,25 +61,8 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
     setEditingText(null);
   };
 
-  /* color: string;
-  setColor: (color: string) => void;
-  drawAction: DrawAction;
-  setDrawAction: (action: DrawAction) => void;
-  scribbles: Scribble[];
-  setScribbles: (scribbles: Scribble[]) => void;
-  rectangles: Rectangle[];
-  setRectangles: (rectangles: Rectangle[]) => void;
-  circles: Circle[];
-  setCircles: (circles: Circle[]) => void;
-  arrows: Arrow[];
-  setArrows: (arrows: Arrow[]) => void;
-  image: HTMLImageElement | undefined;
-  setImage: (image: HTMLImageElement | undefined) => void; */
-
   const color = useStore((state) => state.color);
-  /* const setColor = useStore((state) => state.setColor); */
   const drawAction = useStore((state) => state.drawAction);
-  /* const setDrawAction = useStore((state) => state.setDrawAction); */
   const scribblesStore = useStore((state) => state.scribbles);
   const setScribblesStore = useStore((state) => state.setScribbles);
   const textsStore = useStore((state) => state.texts);
@@ -116,7 +73,9 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
   const arrowsStore = useStore((state) => state.arrows);
   const setArrowsStore = useStore((state) => state.setArrows);
   const image = useStore((state) => state.image);
-  /* const setImage = useStore((state) => state.setImage); */
+  const setSelectedItem = useStore((state) => state.setSelectedItem);
+
+  const stageRef = useRef<any>(null);
 
   React.useEffect(() => {
     setRectangles(rectanglesStore);
@@ -146,8 +105,6 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
     isPaintRef.current = false;
   }, []);
 
-  const stageRef = useRef<any>(null);
-
   const currentShapeRef = useRef<string>();
 
   const onStageMouseDown = useCallback(
@@ -155,7 +112,6 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
       if (drawAction === DrawAction.Select) return;
       isPaintRef.current = true;
       const stage = stageRef?.current;
-      console.log(stage);
       const pos = stage?.getPointerPosition();
       const x = pos?.x || 0;
       const y = pos?.y || 0;
@@ -340,6 +296,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
     (e: KonvaEventObject<MouseEvent>) => {
       if (drawAction !== DrawAction.Select) return;
       const currentTarget = e.currentTarget;
+      setSelectedItem(currentTarget);
       transformerRef?.current?.node(currentTarget);
     },
     [drawAction]
@@ -355,7 +312,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
   );
 
   return (
-    <div className="w-[85%] h-[80%] overflow-hidden border-black">
+    <div className="w-[75%] h-[80%] hover:cursor-crosshair overflow-hidden border-black rounded-xl shadow-2xl">
       <Stage
         height={SIZE}
         width={SIZE}
@@ -380,8 +337,8 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               image={image}
               x={0}
               y={0}
-              height={SIZE / 2}
-              width={SIZE / 2}
+              height={SIZE / 3}
+              width={SIZE / 3}
               draggable={isDraggable}
             />
           )}

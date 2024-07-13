@@ -4,7 +4,7 @@ import Bar from "./components/Bar";
 
 function App() {
   return (
-    <div className="w-full m-0 h-screen bg-black flex justify-center items-center">
+    <div className="w-full m-0 h-screen bg-fourth flex justify-evenly items-center">
       <Bar></Bar>
       <Konva></Konva>
     </div>

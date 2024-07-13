@@ -9,6 +9,8 @@ import {
 import { DrawAction } from "./components/Paint.constanst";
 
 interface StoreState {
+  selectedItem: {};
+  setSelectedItem: (selectedItem: {}) => void;
   color: string;
   setColor: (color: string) => void;
   drawAction: DrawAction;
@@ -28,6 +30,8 @@ interface StoreState {
 }
 
 export const useStore = create<StoreState>((set) => ({
+  selectedItem: {},
+  setSelectedItem: (item) => set({ selectedItem: item }),
   color: "#000",
   setColor: (colors) => set({ color: colors }),
   drawAction: DrawAction.Select,
