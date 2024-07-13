@@ -12,6 +12,16 @@ export type Rectangle = Shape & {
   y: number;
 };
 
+export type Text = Shape & {
+  id: string;
+  width: number;
+  height: number;
+  text: string;
+  x: number;
+  y: number;
+  color: string;
+};
+
 export type Circle = Shape & {
   radius: number;
   x: number;

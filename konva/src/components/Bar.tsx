@@ -9,6 +9,7 @@ export default function Bar() {
   const color = useStore((state) => state.color);
   const setColor = useStore((state) => state.setColor);
   const setDrawAction = useStore((state) => state.setDrawAction);
+  const setTexts = useStore((state) => state.setTexts);
   const setRectangles = useStore((state) => state.setRectangles);
   const setCircles = useStore((state) => state.setCircles);
   const setArrows = useStore((state) => state.setArrows);
@@ -57,11 +58,12 @@ export default function Bar() {
     setScribbles([]);
     setArrows([]);
     setImage(undefined);
+    setTexts([]);
   }, []);
 
   return (
-    <div className="w-[15%] m-4 flex justify-evenly items-center">
-      <div className="w-full h-screen flex flex-col justify-evenly items-center">
+    <div className="w-[15%] ml-4 h-[80%] bg-white flex justify-evenly items-center">
+      <div className="w-full h-[100%] flex flex-col justify-evenly items-center border border-black rounded border-x-4">
         {PAINT_OPTIONS.map(({ id, label, icon }) => (
           <button
             aria-label={label}
@@ -79,12 +81,12 @@ export default function Bar() {
           color={color}
           onChangeComplete={(selectedColor) => setColor(selectedColor.hex)}
         /> */}
-        {/* <select value={color} onChange={}>
-            <option value="black">Negro</option>
-            <option value="green">Verde</option>
-            <option value="yellow">Amarillo</option>
-            <option value="red">Rojo</option>
-          </select> */}
+        <select value={color} onChange={(e) => setColor(e.target.value)}>
+          <option value="black">Negro</option>
+          <option value="green">Verde</option>
+          <option value="yellow">Amarillo</option>
+          <option value="red">Rojo</option>
+        </select>
         <input
           type="file"
           ref={fileRef}
@@ -94,6 +96,7 @@ export default function Bar() {
         />
         <button
           /* leftIcon={<Upload />} */
+          className="flex items-center justify-evenly w-[60%]"
           //@ts-ignore
           variant="solid"
           onClick={onImportImageClick}
@@ -102,6 +105,7 @@ export default function Bar() {
           {<Upload />} Import Image
         </button>
         <button
+          className="flex items-center justify-evenly w-[60%]"
           /* leftIcon={<Download />} */
           //@ts-ignore
           // colorScheme="whatsapp"

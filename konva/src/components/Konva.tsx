@@ -8,25 +8,84 @@ import {
   Circle as KonvaCircle,
   Line as KonvaLine,
   Arrow as KonvaArrow,
+  Text as KonvaText,
   Transformer,
 } from "react-konva";
 import { v4 as uuidv4 } from "uuid";
 import { DrawAction } from "./Paint.constanst";
 import { useStore } from "../store";
-import { Rectangle } from "./Paint.types";
+import { Rectangle, Scribble, Circle, Arrow, Text } from "./Paint.types";
+import { CheckLg } from "react-bootstrap-icons";
 /* import { SketchPicker } from "react-color";
 import { Download, Upload, XLg } from "react-bootstrap-icons"; */
 
 interface PaintProps {}
 
 export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
+  //const [color, setColor] = useState("#000");
+  const rectanglesStore = useStore((state) => state.rectangles);
   const [rectangles, setRectangles] = React.useState<Rectangle[]>([]);
-  /* const [color, setColor] = useState("#000");
-  const [drawAction, setDrawAction] = useState<DrawAction>(DrawAction.Select);
-  const [scribbles, setScribbles] = useState<Scribble[]>([]);
-  const [circles, setCircles] = useState<Circle[]>([]);
-  const [arrows, setArrows] = useState<Arrow[]>([]);
-  const [image, setImage] = useState<HTMLImageElement>(); */
+  const [scribbles, setScribbles] = React.useState<Scribble[]>([]);
+  const [circles, setCircles] = React.useState<Circle[]>([]);
+  const [arrows, setArrows] = React.useState<Arrow[]>([]);
+  const [texts, setTexts] = React.useState<Text[]>([]);
+  const [editingText, setEditingText] = React.useState<{
+    id: string;
+    text: string;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  /* const handleTextDblClick = (e: KonvaEventObject<MouseEvent>) => {
+    const { id, text, x, y } = e.target.attrs;
+    setEditingText({ id, text, x, y });
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editingText) {
+      const updatedTexts = texts.map((text) =>
+        text.id === editingText.id ? { ...text, text: e.target.value } : text
+      );
+      console.log("Holoooooo");
+      setTexts(updatedTexts);
+      setEditingText({ ...editingText, text: e.target.value });
+    }
+  };
+
+  const handleTextBlur = () => {
+    setEditingText(null);
+  }; */
+
+  const handleTextDblClick = (e: KonvaEventObject<MouseEvent>) => {
+    const textNode = e.target;
+    console.log(textNode);
+    textNode.destroy();
+    const textPosition = textNode.getAbsolutePosition();
+    setEditingText({
+      //@ts-ignore
+      id: textNode.id(),
+      x: textPosition.x,
+      y: textPosition.y,
+      //@ts-ignore
+      text: textNode.attrs.text,
+    });
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingText((prev) => (prev ? { ...prev, text: e.target.value } : null));
+  };
+
+  const handleTextBlur = () => {
+    if (!editingText) return;
+    //@ts-ignore
+    const { id, text } = editingText;
+    console.log(id, text, editingText, texts);
+    setTexts((prevTexts) =>
+      //@ts-ignore
+      prevTexts.map((t) => (t.id === id ? { ...t, text } : t))
+    );
+    setEditingText(null);
+  };
 
   /* color: string;
   setColor: (color: string) => void;
@@ -47,18 +106,39 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
   /* const setColor = useStore((state) => state.setColor); */
   const drawAction = useStore((state) => state.drawAction);
   /* const setDrawAction = useStore((state) => state.setDrawAction); */
-  const scribbles = useStore((state) => state.scribbles);
-  const setScribbles = useStore((state) => state.setScribbles);
-  const rectanglesStore = useStore((state) => state.rectangles);
+  const scribblesStore = useStore((state) => state.scribbles);
+  const setScribblesStore = useStore((state) => state.setScribbles);
+  const textsStore = useStore((state) => state.texts);
+  const setTextsStore = useStore((state) => state.setTexts);
   const setRectanglesStore = useStore((state) => state.setRectangles);
-  const circles = useStore((state) => state.circles);
-  const setCircles = useStore((state) => state.setCircles);
-  const arrows = useStore((state) => state.arrows);
-  const setArrows = useStore((state) => state.setArrows);
+  const circlesStore = useStore((state) => state.circles);
+  const setCirclesStore = useStore((state) => state.setCircles);
+  const arrowsStore = useStore((state) => state.arrows);
+  const setArrowsStore = useStore((state) => state.setArrows);
   const image = useStore((state) => state.image);
   /* const setImage = useStore((state) => state.setImage); */
 
-  const SIZE = 700;
+  React.useEffect(() => {
+    setRectangles(rectanglesStore);
+  }, [rectanglesStore]);
+
+  React.useEffect(() => {
+    setScribbles(scribblesStore);
+  }, [scribblesStore]);
+
+  React.useEffect(() => {
+    setCircles(circlesStore);
+  }, [circlesStore]);
+
+  React.useEffect(() => {
+    setArrows(arrowsStore);
+  }, [arrowsStore]);
+
+  React.useEffect(() => {
+    setTexts(textsStore);
+  }, [textsStore]);
+
+  const SIZE = window.innerWidth;
 
   const isPaintRef = useRef(false);
 
@@ -75,6 +155,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
       if (drawAction === DrawAction.Select) return;
       isPaintRef.current = true;
       const stage = stageRef?.current;
+      console.log(stage);
       const pos = stage?.getPointerPosition();
       const x = pos?.x || 0;
       const y = pos?.y || 0;
@@ -92,6 +173,22 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               color,
             },
           ]);
+          setScribblesStore(scribbles);
+          break;
+        }
+        case DrawAction.Text: {
+          //@ts-ignore
+          setTexts((prevTexts) => [
+            ...prevTexts,
+            {
+              id,
+              text: "Nuevo texto",
+              x,
+              y,
+              color,
+            },
+          ]);
+          setTextsStore(texts);
           break;
         }
         case DrawAction.Circle: {
@@ -106,6 +203,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               color,
             },
           ]);
+          setCirclesStore(circles);
           break;
         }
         case DrawAction.Rectangle: {
@@ -123,6 +221,22 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
           setRectanglesStore(rectangles);
           break;
         }
+        case DrawAction.Text: {
+          setTexts((prevTexts) => [
+            ...prevTexts,
+            {
+              id,
+              text: "Nuevo texto",
+              height: 1,
+              width: 1,
+              x,
+              y,
+              color,
+            },
+          ]);
+          setTextsStore(texts);
+          break;
+        }
         case DrawAction.Arrow: {
           //@ts-ignore
           setArrows((prevArrows) => [
@@ -133,6 +247,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               color,
             },
           ]);
+          setArrowsStore(arrows);
           break;
         }
       }
@@ -163,6 +278,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               : prevScribble
           )
         );
+        setScribblesStore(scribbles);
         break;
       }
       case DrawAction.Circle: {
@@ -179,6 +295,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               : prevCircle
           )
         );
+        setCirclesStore(circles);
         break;
       }
       case DrawAction.Rectangle: {
@@ -195,6 +312,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               : prevRectangle
           )
         );
+        setRectanglesStore(rectangles);
         break;
       }
       case DrawAction.Arrow: {
@@ -210,6 +328,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               : prevArrow
           )
         );
+        setArrowsStore(arrows);
         break;
       }
     }
@@ -236,11 +355,12 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
   );
 
   return (
-    <div className="w-[85%] h-screen overflow-hidden border-black mt-4">
+    <div className="w-[85%] h-[80%] overflow-hidden border-black">
       <Stage
         height={SIZE}
         width={SIZE}
         ref={stageRef}
+        className="border border-solid border-black"
         onMouseUp={onStageMouseUp}
         onMouseDown={onStageMouseDown}
         onMouseMove={onStageMouseMove}
@@ -275,6 +395,20 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
               strokeWidth={4}
               onClick={onShapeClick}
               draggable={isDraggable}
+            />
+          ))}
+          {texts.map((text) => (
+            <KonvaText
+              key={text.id}
+              id={text.id}
+              text={text.text}
+              x={text.x}
+              y={text.y}
+              fill={text.color}
+              fontSize={20}
+              draggable={isDraggable}
+              onClick={onShapeClick}
+              onDblClick={handleTextDblClick}
             />
           ))}
           {rectangles.map((rectangle) => (
@@ -320,6 +454,22 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
           <Transformer ref={transformerRef} />
         </Layer>
       </Stage>
+      {editingText && (
+        <input
+          style={{
+            position: "absolute",
+            top: editingText.y,
+            left: editingText.x,
+            fontSize: "20px",
+            border: "1px solid black",
+            backgroundColor: "white",
+          }}
+          value={editingText.text}
+          onChange={handleTextChange}
+          onBlur={handleTextBlur}
+          autoFocus
+        />
+      )}
     </div>
   );
 });

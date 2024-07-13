@@ -12,6 +12,7 @@ export enum DrawAction {
   Circle = "circle",
   Scribble = "freedraw",
   Arrow = "arrow",
+  Text = "text",
 }
 
 export const PAINT_OPTIONS = [
@@ -24,4 +25,5 @@ export const PAINT_OPTIONS = [
   { id: DrawAction.Circle, label: "Draw Cirle Shape", icon: <Circle /> },
   { id: DrawAction.Arrow, label: "Draw Arrow Shape", icon: <ArrowUpLeft /> },
   { id: DrawAction.Scribble, label: "Scribble", icon: <Pencil /> },
+  { id: DrawAction.Text, label: "Text", icon: <Pencil /> },
 ];

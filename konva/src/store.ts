@@ -1,5 +1,11 @@
 import create from "zustand";
-import { Arrow, Circle, Rectangle, Scribble } from "./components/Paint.types";
+import {
+  Arrow,
+  Circle,
+  Rectangle,
+  Scribble,
+  Text,
+} from "./components/Paint.types";
 import { DrawAction } from "./components/Paint.constanst";
 
 interface StoreState {
@@ -15,6 +21,8 @@ interface StoreState {
   setCircles: (circles: Circle[]) => void;
   arrows: Arrow[];
   setArrows: (arrows: Arrow[]) => void;
+  texts: Text[];
+  setTexts: (texts: Text[]) => void;
   image: HTMLImageElement | undefined;
   setImage: (image: HTMLImageElement | undefined) => void;
 }
@@ -27,10 +35,9 @@ export const useStore = create<StoreState>((set) => ({
   scribbles: [],
   setScribbles: (arrayScr) => set({ scribbles: arrayScr }),
   rectangles: [],
-  setRectangles: (arrayRect) => {
-    console.log(arrayRect);
-    return set({ rectangles: arrayRect });
-  },
+  setRectangles: (arrayRect) => set({ rectangles: arrayRect }),
+  texts: [],
+  setTexts: (arrayText) => set({ texts: arrayText }),
   arrows: [],
   setArrows: (arrayArrow) => set({ arrows: arrayArrow }),
   circles: [],
