@@ -108,6 +108,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
   const currentShapeRef = useRef<string>();
 
   const onStageMouseDown = useCallback(
+    //@ts-ignore
     async (e: KonvaEventObject<MouseEvent>) => {
       if (drawAction === DrawAction.Select) return;
       isPaintRef.current = true;
@@ -305,6 +306,7 @@ export const Konva: React.FC<PaintProps> = React.memo(function Paint({}) {
   const isDraggable = drawAction === DrawAction.Select;
 
   const onBgClick = useCallback(
+    //@ts-ignore
     (e: KonvaEventObject<MouseEvent>) => {
       transformerRef?.current?.nodes([]);
     },
